@@ -123,28 +123,109 @@ changes.
 
 Existing Jest tests ([test/](../test/)) cover pure logic and need no change.
 
+## Documentation rewrite
+
+The current [README.md](../README.md) is upstream's. It opens by declaring the extension
+unmaintained and points every support channel at `teresa-ou/inboxy` — the direct opposite of this
+fork's purpose. It must be rewritten, not amended.
+
+### Must cover
+
+**1. Attribution and provenance.** inboxy was created by
+[Teresa Ou](https://github.com/teresa-ou); this is a fork of `teresa-ou/inboxy`, continued after
+upstream stopped active maintenance. Link the original repo. Credit is both courtesy and a GPL
+obligation — copyright notices stay, and §5(a) requires modified files to carry prominent notice of
+change.
+
+**2. Purpose.** Keep inboxy alive and working across Chrome, Edge, and Firefox. State it plainly up
+front — it is the reason the fork exists and the first thing a visitor needs. Frame it as the
+project's intent, not a claim of present-day support: Chrome works today, Edge is next, Firefox
+follows. A short status line per browser (working / in progress / planned) keeps the ambition
+honest and saves the README from going stale as each lands.
+
+**3. Divergence from upstream.** A short, running list of what this fork changed, starting with the
+1.7.1 manifest cleanup. Doubles as the GPL §5(a) notice and as the honest answer to "why not just
+use the original?"
+
+**4. Per-browser install and development.** Build once, load the same `dist/` in each browser:
+Chrome and Edge via `chrome://extensions` / `edge://extensions` → Developer mode → Load unpacked;
+Firefox via `about:debugging` (see the Firefox caveat below). Keep the existing `npm install` /
+`npm run build` steps, and add `npm run package` once it exists.
+
+**5. Repo layout — specifically the `dist/` trap.** `dist/` is not a disposable build directory. It
+is the extension package root: 38 of its 39 files are hand-authored and tracked, and only
+`content.js` is generated from [src/](../src/). Deleting `dist/` destroys the popup, options page,
+and all artwork. This is the single most likely way for a newcomer to break the project, and the
+directory name actively misleads. Document it; renaming is not worth the churn.
+
+**6. Support channels.** Issues go to this fork, not upstream. This includes the in-product link at
+[options.html:250-258](../dist/options/options.html#L250-L258), currently pointing at
+`teresa-ou/inboxy/issues`.
+
+**7. License.** GPL-3.0-**or-later** — the file headers say "or (at your option) any later version".
+Note that `package.json` currently declares `"description": "GPL-3.0-only"`, which contradicts them
+and should be corrected to a proper `"license": "GPL-3.0-or-later"` field.
+
+### Framing
+
+**Firefox ordering.** Firefox is in scope as intent, not as a same-day deliverable — the README
+should say so rather than imply all three work now. The repo currently holds only a Chrome MV3
+manifest, so Firefox needs real work of its own: `browser_specific_settings` with an extension ID,
+its differing MV3 background model, and an AMO submission. That becomes a phase after Edge ships;
+until then the README lists it as planned.
+
+**Naming and branding — unresolved, settled in Phase 4.** The GPL licenses the *code*; it does not
+license trademarks. The name "inboxy", the logo, and `inboxymail.com` are not ours to take. A public
+store listing under that name is a trademark question wholly separate from the license, and it
+applies to the Chrome and Firefox listings as much as Edge. Options, in increasing order of safety:
+publish as-is and hope; email Teresa Ou for permission; or rename and rebrand the fork. It
+determines the store listing name, the docs, the logo assets, and possibly the manifest `name`.
+
+Nothing before Phase 4 depends on it — local builds, Edge testing, and the doc rewrite all proceed
+under the current name — so it is deferred rather than blocking.
+
+Renaming is harder than it looks: candidate clearance checks killed *Bindle* (an existing Chrome
+extension), *Tidings* (Tidings Company LLC, an email newsletter SaaS shipping Chrome and Firefox
+extensions), and *Sorted* (homophone of Sortd for Gmail, same niche). The obvious vocabulary for
+"tidy inbox" is thoroughly worked by existing email products. If a rename is needed, coined or
+oblique names clear far more easily than descriptive ones — but asking Teresa Ou first is cheaper
+than any of it.
+
 ## Action plan
 
 **Phase 1 — code cleanup (blocking) — DONE, released as 1.7.1**
 - [x] Remove `dist/background.js`, its `background` manifest entry, and the `declarativeContent` permission
 - [x] Remove `action.show_matches` from the manifest
 - [x] Make the `options.html` feedback link browser-neutral. A per-browser store link
-      needs the Edge listing URL, which does not exist until Phase 4 — deferred there.
+      needs the Edge listing URL, which does not exist until Phase 5 — deferred there.
 - [x] Reconcile the `package.json` / manifest version mismatch
 - [x] Run Jest; verify the extension loads clean in Chrome — 13 tests pass; unpacked load verified
 
-**Phase 2 — packaging**
+**Phase 2 — verification — DONE**
+- [x] Load unpacked in Chrome — no manifest errors, storage-only permissions, bundling intact
+- [x] Load unpacked in Edge — works; the "runs unmodified on Chromium" premise holds
+
+The compatibility risks this plan opened with turned out to be theoretical. No Edge-specific
+code was needed, and the [Test plan](#test-plan) above is retained only as a regression
+checklist for future changes.
+
+**Phase 3 — documentation**
+- [ ] Rewrite the documentation — see [Documentation rewrite](#documentation-rewrite).
+      Write it under the current name; branding is settled in Phase 4, and a rename means
+      one more pass over the docs then.
+
+**Phase 4 — branding**
+- [ ] Settle whether this ships as "inboxy", under a new name, or as a contribution upstream
+      rather than a published fork — see [Framing](#framing). Cheapest first move by far:
+      email Teresa Ou and ask.
+- [ ] Apply the outcome to the manifest `name`, logo assets, docs, and site references
+
+**Phase 5 — publish**
 - [ ] Add `npm run package` — must zip the *contents* of `dist/`, so `manifest.json` lands
       at the archive root; a `dist/`-prefixed archive is rejected by both stores
 - [ ] Switch webpack to `mode: 'production'` for release builds. Development mode plus
       `inline-source-map` currently inflates `content.js` to ~267KB of mostly source map.
 - [ ] Gitignore the zip artifact
-
-**Phase 3 — verification**
-- [ ] Load unpacked in Edge; work the test plan above
-- [ ] Re-verify in Chrome for regressions
-
-**Phase 4 — publish**
 - [ ] Register on Partner Center
 - [ ] Assemble listing assets from the Chrome listing
 - [ ] Submit; track certification
@@ -152,10 +233,11 @@ Existing Jest tests ([test/](../test/)) cover pure logic and need no change.
 
 ## Open questions
 
-- **Firefox.** The README advertises a Firefox build, but this repo contains only the Chrome MV3
-  manifest — that build lives elsewhere. Adding Edge does not touch it, but if a multi-target build
-  is ever wanted, that is the fork worth abstracting, not Edge.
+- **Firefox.** A phase after Edge ships, listed as planned until then — see
+  [Framing](#framing). Adding Edge does not touch it; if a real multi-target build is ever
+  wanted, Firefox is the fork worth abstracting for, not Edge.
+- **Naming and branding.** Trademark, not license — see [Framing](#framing). Settled in Phase 4.
 - **Ownership.** Partner Center registration needs a Microsoft account tied to a real owner. Decide
-  who holds it before Phase 4.
+  who holds it before Phase 5 — and note it may not be us at all, if the Edge work goes upstream.
 - **Release cadence.** Every future release now needs two submissions. Worth deciding whether Edge
   tracks Chrome release-for-release, or only picks up meaningful changes.
