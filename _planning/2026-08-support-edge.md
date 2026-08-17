@@ -125,15 +125,19 @@ Existing Jest tests ([test/](../test/)) cover pure logic and need no change.
 
 ## Action plan
 
-**Phase 1 — code cleanup (blocking)**
-- [ ] Remove `dist/background.js`, its `background` manifest entry, and the `declarativeContent` permission
-- [ ] Remove `action.show_matches` from the manifest
-- [ ] Fix or redirect the Chrome Web Store link in `options.html`
-- [ ] Reconcile the `package.json` / manifest version mismatch
-- [ ] Run Jest; verify the extension still loads clean in Chrome
+**Phase 1 — code cleanup (blocking) — DONE, released as 1.7.1**
+- [x] Remove `dist/background.js`, its `background` manifest entry, and the `declarativeContent` permission
+- [x] Remove `action.show_matches` from the manifest
+- [x] Make the `options.html` feedback link browser-neutral. A per-browser store link
+      needs the Edge listing URL, which does not exist until Phase 4 — deferred there.
+- [x] Reconcile the `package.json` / manifest version mismatch
+- [x] Run Jest; verify the extension loads clean in Chrome — 13 tests pass; unpacked load verified
 
 **Phase 2 — packaging**
-- [ ] Add `npm run package`
+- [ ] Add `npm run package` — must zip the *contents* of `dist/`, so `manifest.json` lands
+      at the archive root; a `dist/`-prefixed archive is rejected by both stores
+- [ ] Switch webpack to `mode: 'production'` for release builds. Development mode plus
+      `inline-source-map` currently inflates `content.js` to ~267KB of mostly source map.
 - [ ] Gitignore the zip artifact
 
 **Phase 3 — verification**
