@@ -24,6 +24,14 @@
  */
 const ORDER_INCREMENT = 100;
 
+/**
+ * The minimum number of messages a label needs before its messages are bundled.
+ *
+ * A bundle of one message hides that message behind a row saying the same thing, so labels
+ * below this threshold have their messages shown unbundled instead.
+ */
+const MIN_BUNDLE_SIZE = 2;
+
 const NO_TAB = '__NO_TAB';
 
 const GmailClasses = {
@@ -114,6 +122,7 @@ const Element = {
 
 export { 
     ORDER_INCREMENT, 
+    MIN_BUNDLE_SIZE,
     NO_TAB,
     GmailClasses, 
     InboxyClasses,
