@@ -54,6 +54,11 @@ function getCurrentTab() {
  * Whether messages should be bundled on the page.
  */
 function supportsBundling(url) {
+    // A popout window has no hash, but has no message list to bundle either
+    if (url.includes('/popout')) {
+        return false;
+    }
+
     if (!url.includes('#')) {
         return true;
     }
