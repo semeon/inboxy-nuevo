@@ -101,10 +101,16 @@ html.inboxy .bundle-row.visible {
     flex-wrap: nowrap;
 }
 
-/* Separate the expanded bundle from the row above it. Now that the bundle has
- * no background, this margin is the only thing setting it apart. */
+/* Separate the expanded bundle from the rows above and below it. With no
+ * background on the bundle, these margins are the only thing setting it
+ * apart. The bottom one is on the last bundled message, since that is what
+ * ends the bundle. */
 html.inboxy .bundle-row.visible {
     margin-top: 12px;
+}
+
+html.inboxy .bundled-message.visible.last {
+    margin-bottom: 12px;
 }
 
 html.inboxy .bundle-row.visible .xY.yX {
