@@ -85,6 +85,10 @@ class ThemeChangeHandler {
         if (!message) {
             return;
         }
+        // Publish the row height so collapsed bundles track Gmail's density
+        // setting (default/comfortable/compact) instead of a fixed size.
+        node.style.setProperty('--inboxy-row-height', `${message.clientHeight}px`);
+
         if (message.clientHeight <= 28) {
             node.classList.add('compact');
         }
