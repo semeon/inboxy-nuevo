@@ -42,6 +42,12 @@ test('supportsBundling - inbox pages with additional params', () => {
         .toBe(true);
 });
 
+test('supportsBundling - popout window has no hash but no message list', () => {
+    expect(supportsBundling('https://mail.google.com/mail/u/0/popout?ver=68wculcb7ncj&cat=FIN%2Forders&th=%23thread-f%3A1873941809954180940&cvid=2'))
+        .toBe(false);
+    expect(supportsBundling('https://mail.google.com/mail/u/0/popout?ver=abc')).toBe(false);
+});
+
 test('supportsBundling - other', () => {
     expect(supportsBundling('https://mail.google.com/mail/u/0/#label/Dentist')).toBe(false);
 });
