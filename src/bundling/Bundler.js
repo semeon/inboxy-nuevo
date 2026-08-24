@@ -34,6 +34,7 @@ import {
     Selectors, 
     TableBodySelectors,
     ORDER_INCREMENT, 
+    MIN_BUNDLE_SIZE,
     Element,
 } from '../util/Constants';
 import DomUtils from '../util/DomUtils';
@@ -137,7 +138,9 @@ class Bundler {
     }
 
     /**
-     * Group messages by their labels.
+     * Group messages by their labels, omitting labels that have too few messages to be
+     * worth bundling.
+     *
      * Returns a map of labels to bundles.
      */
     _groupByLabel(messageNodes) {
@@ -158,7 +161,18 @@ class Bundler {
             }
         })
 
-        return bundlesByLabel;
+        return Bundler._dropUndersizedBundles(bundlesByLabel);
+    }
+
+    /**
+     * Returns the given bundles, without the ones that have fewer than MIN_BUNDLE_SIZE messages.
+     *
+     * Messages belonging only to dropped bundles are shown unbundled.
+     */
+    static _dropUndersizedBundles(bundlesByLabel) {
+        return Object.fromEntries(
+            Object.entries(bundlesByLabel)
+                .filter(([, bundle]) => bundle.getMessages().length >= MIN_BUNDLE_SIZE));
     }
 
     /**
@@ -189,9 +203,13 @@ class Bundler {
 
         for (let i = 0; i < messageNodes.length; i++) {
             const message = messageNodes[i];
-            const messageLabels = this.selectiveBundling.findRelevantLabels(message);
+            const bundledLabels = this._isStarred(message)
+                ? []
+                : this.selectiveBundling.findRelevantLabels(message)
+                    .filter(l => bundlesByLabel[l]);
 
-            if (messageLabels.length === 0 || this._isStarred(message)) {
+            // Messages that don't belong to any bundle are shown on their own
+            if (bundledLabels.length === 0) {
                 rows.push({
                     element: message,
                     type: Element.UNBUNDLED_MESSAGE,
@@ -199,8 +217,8 @@ class Bundler {
                 continue;
             }
 
-            messageLabels.forEach(l => {
-                if (!labels.has(l) && bundlesByLabel[l]) {
+            bundledLabels.forEach(l => {
+                if (!labels.has(l)) {
                     rows.push({
                         element: bundlesByLabel[l],
                         type: Element.BUNDLE,

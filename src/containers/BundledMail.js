@@ -39,10 +39,14 @@ class BundledMail {
     }
 
     /**
-     * Get the bundle for the given page number and label.
+     * Get the bundle for the given page number and label, or undefined if there is no such
+     * bundle.
      */
     getBundleOnPage(label, pageNumber) {
-        return this._bundlesMap[pageNumber][getCurrentTab()][label];
+        const bundlesForPage = this._bundlesMap[pageNumber];
+        const bundlesForTab = bundlesForPage && bundlesForPage[getCurrentTab()];
+
+        return bundlesForTab && bundlesForTab[label];
     }
 
     /**
