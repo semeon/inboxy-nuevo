@@ -164,33 +164,23 @@ class Bundler {
     /**
      * Returns a list of elements that will be shown in the message list,
      * in the same order they will be displayed.
-     *
-     * Bundles are hoisted above the unbundled messages, so the list is all
-     * bundle rows (most recent first) followed by the unbundled messages.
-     *
+     * 
      * Each item is an object with 'element' and 'type' fields. They can be
      * a message row, date divider, or bundle row.
      */
     _calculateSortedTableRows(messageNodes, bundlesByLabel) {
-
+        
         const rows = this._calculateMessageAndBundleRows(messageNodes, bundlesByLabel);
-        const bundles = rows.filter(r => r.type === Element.BUNDLE);
-        const messages = rows.filter(r => r.type !== Element.BUNDLE);
 
         if (!this.groupMessagesByDate) {
-            return [...bundles, ...messages];
+            return rows;
         }
 
         const sampleDate = messageNodes.length 
             ? DomUtils.extractDate(messageNodes[0])
             : '';
 
-        // Dividers cover the unbundled messages only; hoisted bundles sit above
-        // them, and date dividers are only inserted going back in time.
-        return [
-            ...bundles,
-            ...DateDivider.withDateDividers(messages, sampleDate, this._getLatestMessage),
-        ];
+        return DateDivider.withDateDividers(rows, sampleDate, this._getLatestMessage);
     }
 
     _calculateMessageAndBundleRows(messageNodes, bundlesByLabel) {

@@ -101,22 +101,10 @@ html.inboxy .bundle-row.visible {
     flex-wrap: nowrap;
 }
 
-/* Separate the expanded bundle from the rows around it. Now that the bundle
- * has no background, these margins are the only thing setting it apart. */
+/* Separate the expanded bundle from the row above it. Now that the bundle has
+ * no background, this margin is the only thing setting it apart. */
 html.inboxy .bundle-row.visible {
     margin-top: 12px;
-}
-
-html.inboxy .bundled-message.visible.last {
-    margin-bottom: 12px;
-}
-
-/* Collapsed bundles track Gmail's density (default/comfortable/compact).
- * --inboxy-row-height is a message row's measured height, set by
- * ThemeChangeHandler; the cells below use `height: unset` so labels can wrap,
- * which is what otherwise discards the density-driven height. */
-html.inboxy .bundle-row:not(.visible) {
-    min-height: var(--inboxy-row-height, 0);
 }
 
 html.inboxy .bundle-row.visible .xY.yX {
@@ -131,13 +119,12 @@ html.inboxy .bundle-row.visible .bundle-and-count {
     text-overflow: ellipsis;
 }
 
-/* Handle long label names */
+/* Long label names ellipsis rather than wrap; wrapping made the bundle row
+ * outgrow a message row */
 html.inboxy .bundle-row:not(.visible) .bundle-and-count {
-    white-space: normal;
-}
-html.inboxy .bundle-row:not(.visible) .xY {
-    align-items: flex-start;
-    height: unset;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 /* Allow more width before wrapping (#11), but not too much so that #36 happens */
 html.inboxy .bundle-row:not(.visible) .xY.yX {
