@@ -88,26 +88,35 @@ html.inboxy .bundle-row.zA.yO.visible,
 html.inboxy .bundle-row.zA.zE.visible {
     box-shadow: none !important;
     font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.35) !important;
-    padding-top: 32px !important;
-    padding-bottom: 18px !important;
-    margin-top: 24px;
-}
-
-html.inboxy.messages-default-theme .bundle-row.yO.visible,
-html.inboxy.messages-default-theme .bundle-row.zE.visible {
-    background-color: #ecf0f9 !important;
+    padding-bottom: 9px !important;
 }
 
 html.inboxy.messages-dark-theme .bundle-row.yO.visible,
 html.inboxy.messages-dark-theme .bundle-row.zE.visible {
-    background-color: rgba(0, 0, 0, 0.25) !important;
     color: #ffffff !important;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.65);
 }
 
 html.inboxy .bundle-row.visible {
     flex-wrap: nowrap;
+}
+
+/* Separate the expanded bundle from the rows around it. Now that the bundle
+ * has no background, these margins are the only thing setting it apart. */
+html.inboxy .bundle-row.visible {
+    margin-top: 12px;
+}
+
+html.inboxy .bundled-message.visible.last {
+    margin-bottom: 12px;
+}
+
+/* Collapsed bundles track Gmail's density (default/comfortable/compact).
+ * --inboxy-row-height is a message row's measured height, set by
+ * ThemeChangeHandler; the cells below use `height: unset` so labels can wrap,
+ * which is what otherwise discards the density-driven height. */
+html.inboxy .bundle-row:not(.visible) {
+    min-height: var(--inboxy-row-height, 0);
 }
 
 html.inboxy .bundle-row.visible .xY.yX {
@@ -286,39 +295,20 @@ html.inboxy .bundled-message {
 
 html.inboxy .bundled-message.visible {
     display: flex;
-    margin-left: 40px;
-    margin-right: 40px;
     width: auto;
     z-index: auto;
 }
 
 /** 
- * Sides and bottom of open bundle area 
+ * Open bundle area: an invisible click target for closing the bundle
  */
 
 html.inboxy .bundle-area {
-    background-color: rgba(255, 255, 255, 0.35);
     cursor: pointer;
     display: none;
-    padding-bottom: 48px;
     position: absolute;
     width: 100%;
     z-index: -2;
-}
-
-html.inboxy.messages-default-theme .bundle-area {
-    background: #ecf0f9;
-}
-
-html.inboxy.messages-dark-theme .bundle-area {
-    background: rgba(0, 0, 0, 0.25);
-}
-
-/** 
- * Bottom of open bundle area
- */
-html.inboxy .bundled-message.visible.last {
-    margin-bottom: 72px;
 }
 
 /** 
