@@ -66,8 +66,14 @@ class StarHandler {
         // Bundle row top
         else if (isStarring) {
             const label = this.bundledMail.getLabelOfOpenedBundle();
-            const bundleRow = this.bundledMail.getBundle(label).getBundleRow();
-            elementTop = _getTop(bundleRow);
+            const bundle = label ? this.bundledMail.getBundle(label) : null;
+            // The message is shown outside of any bundle, so there's no bundle row to scroll to
+            if (!bundle) {
+                this.prevTop = null;
+                return;
+            }
+
+            elementTop = _getTop(bundle.getBundleRow());
         }
 
         const scrollableContainer = document.querySelector(Selectors.SCROLLABLE_CONTAINER);
@@ -88,9 +94,14 @@ class StarHandler {
             return;
         }
 
-        const bundleRow = this.bundledMail.getBundle(label).getBundleRow();
+        // The bundle may be gone after rebundling, ex. if it's left with too few messages
+        const bundle = this.bundledMail.getBundle(label);
+        if (!bundle) {
+            this.prevTop = null;
+            return;
+        }
 
-        const elementTop = _getTop(bundleRow);
+        const elementTop = _getTop(bundle.getBundleRow());
         const scrollableContainer = document.querySelector(Selectors.SCROLLABLE_CONTAINER);
         scrollableContainer.scrollTop = this.prevTop + elementTop - _getTop(scrollableContainer);
 
